@@ -488,6 +488,18 @@ export default class GameScene extends Phaser.Scene {
       this._togglePause();
     });
 
+    // ミュートボタン (一時停止の左)
+    this._muted = this.sound.mute;
+    this.muteBtn = this.add.text(W - 77, 56, this._muted ? '🔇' : '🔊', {
+      fontSize: '32px'
+    }).setScrollFactor(0).setDepth(52).setInteractive();
+    this.muteBtn.on('pointerdown', (pointer) => {
+      pointer.event.stopPropagation();
+      this._muted = !this._muted;
+      this.sound.mute = this._muted;
+      this.muteBtn.setText(this._muted ? '🔇' : '🔊');
+    });
+
     // 下部: タップ操作ガイド (最初の数秒のみ)
     this.tapGuide = this.add.text(W / 2, CONFIG.HEIGHT - 30, 'タップでジャンプ！', {
       fontFamily: '"M PLUS Rounded 1c", Arial', fontSize: '16px',

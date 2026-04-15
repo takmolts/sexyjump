@@ -119,8 +119,9 @@ export default class TitleScene extends Phaser.Scene {
     });
 
     // バージョン
-    this.add.text(W / 2, H - 14, 'v1.0 SexyJump', {
-      fontSize: '11px', color: '#555555', fontFamily: 'Arial'
+    this.add.text(W / 2, H - 16, 'V01.00.00', {
+      fontSize: '15px', color: '#aaaaaa', fontFamily: 'Arial',
+      stroke: '#000', strokeThickness: 1
     }).setOrigin(0.5);
   }
 
