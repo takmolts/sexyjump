@@ -28,8 +28,8 @@ export const CONFIG = {
   PLATFORM_MIN_GAP: 95,        // 最小Y間隔
   PLATFORM_MAX_GAP: 170,       // 最大Y間隔
   PLATFORM_AVG_GAP: 132,       // 平均Y間隔 (段数計算用)
-  PLATFORM_MIN_W: 150,         // 最小幅 (単独時)
-  PLATFORM_MAX_W: 170,         // 最大幅 (単独時)
+  PLATFORM_MIN_W: 80,         // 最小幅 (単独時)
+  PLATFORM_MAX_W: 130,         // 最大幅 (単独時)
   PLATFORM_MULTI_W: 70,        // 複数足場時の幅
   PLATFORM_MULTI_CHANCE: 0.4,  // 複数足場になる確率
   PLATFORM_MIN_X: 55,          // 最小X

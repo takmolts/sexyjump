@@ -119,7 +119,7 @@ export default class TitleScene extends Phaser.Scene {
     });
 
     // バージョン
-    this.add.text(W / 2, H - 16, 'V01.00.00', {
+    this.add.text(W / 2, H - 16, 'V01.00.01', {
       fontSize: '15px', color: '#aaaaaa', fontFamily: 'Arial',
       stroke: '#000', strokeThickness: 1
     }).setOrigin(0.5);

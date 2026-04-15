@@ -99,6 +99,7 @@ export default class BootScene extends Phaser.Scene {
       this.chromaKey('friend_01');
       this.chromaKey('friend_02');
     this.chromaKey('banner');
+      this.chromaKeyWhite('platform');
 
       // バナナテクスチャを分割生成
       this.createBananaTextures();
@@ -265,6 +266,30 @@ export default class BootScene extends Phaser.Scene {
       const r = data[i], g = data[i + 1], b = data[i + 2];
       // 緑が強く、赤と青が弱いピクセルを透明にする
       if (g > 100 && g > r * 1.4 && g > b * 1.4) {
+        data[i + 3] = 0;
+      }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+    this.textures.remove(textureKey);
+    this.textures.addCanvas(textureKey, canvas);
+  }
+
+  /** 指定テクスチャの白背景を透過に置き換える */
+  chromaKeyWhite(textureKey) {
+    const source = this.textures.get(textureKey).getSourceImage();
+    const canvas = document.createElement('canvas');
+    canvas.width = source.width;
+    canvas.height = source.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(source, 0, 0);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      if (r > 230 && g > 230 && b > 230) {
         data[i + 3] = 0;
       }
     }
