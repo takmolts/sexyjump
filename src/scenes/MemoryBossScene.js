@@ -91,6 +91,10 @@ export default class MemoryBossScene extends Phaser.Scene {
     // カードグリッド生成
     this._createCardGrid();
 
+    // BGM再生
+    this.bgm = this.sound.add('bgm_boss', { loop: true, volume: 0.5 });
+    this.bgm.play();
+
     // フェードイン
     this.cameras.main.fadeIn(400, 0, 0, 0);
   }
@@ -314,6 +318,7 @@ export default class MemoryBossScene extends Phaser.Scene {
 
   _endBattle() {
     this.state = 'RESULT';
+    if (this.bgm) this.bgm.stop();
 
     const W = CONFIG.WIDTH, H = CONFIG.HEIGHT;
     const playerWins = this.playerPairs >= this.bossPairs; // 引き分けも勝利

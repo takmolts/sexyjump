@@ -143,6 +143,14 @@ export default class GameScene extends Phaser.Scene {
       this._createDebugUI();
     }
 
+    // BGM再生
+    if (!this.sound.get('bgm_game') || !this.sound.get('bgm_game').isPlaying) {
+      this.bgm = this.sound.add('bgm_game', { loop: true, volume: 0.5 });
+      this.bgm.play();
+    } else {
+      this.bgm = this.sound.get('bgm_game');
+    }
+
     // フェードイン
     this.cameras.main.fadeIn(400, 0, 0, 0);
   }
@@ -560,6 +568,7 @@ export default class GameScene extends Phaser.Scene {
         bossAlert.destroy();
         this.cameras.main.fade(500, 0, 0, 0, false, (_cam, progress) => {
           if (progress === 1) {
+            if (this.bgm) this.bgm.stop();
             const bossScene = Math.random() < 0.5 ? 'BossScene' : 'MemoryBossScene';
             this.scene.start(bossScene, {
               stageCount: this.stageCount,
@@ -1024,6 +1033,7 @@ export default class GameScene extends Phaser.Scene {
     if (this.isDead) return;
     this.isDead = true;
 
+    if (this.bgm) this.bgm.stop();
     this.sound.play('miss');
     this.cameras.main.shake(400, 0.025);
 

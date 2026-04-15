@@ -226,6 +226,10 @@ export default class BossScene extends Phaser.Scene {
       callbackScope: this
     });
 
+    // BGM再生
+    this.bgm = this.sound.add('bgm_boss', { loop: true, volume: 0.5 });
+    this.bgm.play();
+
     // フェードイン
     this.cameras.main.fadeIn(400, 0, 0, 0);
   }
@@ -522,6 +526,7 @@ export default class BossScene extends Phaser.Scene {
   // -------------------------------------------------
   _endBattle(playerWins) {
     if (this.timerEvent) this.timerEvent.remove();
+    if (this.bgm) this.bgm.stop();
     this.state = 'RESULT';
 
     const W = CONFIG.WIDTH, H = CONFIG.HEIGHT;

@@ -56,6 +56,8 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('stop', 'assets/images/stop.png');
 
     // --- 音声 ---
+    this.load.audio('bgm_game', 'assets/audio/bgm.mp3');
+    this.load.audio('bgm_boss', 'assets/audio/boss.mp3');
     this.load.audio('miss', 'assets/audio/miss.ogg');
 
     // バナナはスプライトシート的に1枚画像を使用 (手続き型で分割)
