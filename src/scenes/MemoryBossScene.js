@@ -49,9 +49,10 @@ export default class MemoryBossScene extends Phaser.Scene {
       hx.strokeCircle(Phaser.Math.Between(0, W), Phaser.Math.Between(0, H), Phaser.Math.Between(30, 80));
     }
 
-    // ボスキャラ
+    // ボスキャラ (強さと連動: 01=最弱, 02=普通, 03=最強)
     const bossKeys = ['boss_01', 'boss_02', 'boss_03'];
-    const bossKey = bossKeys[Math.floor(Math.random() * bossKeys.length)];
+    this.bossAILevel = Math.floor(Math.random() * 3); // 0=最弱, 1=普通, 2=最強
+    const bossKey = bossKeys[this.bossAILevel];
     const bossImg = this.add.image(W * 0.78, 60, bossKey).setDisplaySize(80, 80).setFlipX(true);
     this.tweens.add({
       targets: bossImg, y: 65, duration: 1000,
@@ -199,6 +200,13 @@ export default class MemoryBossScene extends Phaser.Scene {
   _checkMatch(isPlayer) {
     const [c1, c2] = this.flippedCards;
 
+    // 最強ボスはプレイヤーがめくったカードも記憶する
+    if (isPlayer && this.bossAILevel === 2 && this._bossMemory) {
+      const ai = { maxMemory: 99 };
+      if (!this._bossMemory.includes(c1) && this._bossMemory.length < ai.maxMemory) this._bossMemory.push(c1);
+      if (!this._bossMemory.includes(c2) && this._bossMemory.length < ai.maxMemory) this._bossMemory.push(c2);
+    }
+
     if (c1.data.pairKey === c2.data.pairKey) {
       // 一致！
       c1.isMatched = true;
@@ -269,20 +277,28 @@ export default class MemoryBossScene extends Phaser.Scene {
       return;
     }
 
-    // ボスAI: ボスレベルに応じて記憶力が上がる
-    // 低レベルではランダム、高レベルでは覚えているカードを狙う
-    const memoryChance = Math.min(0.6, 0.1 + this.bossLevel * 0.1);
+    // ボスAI: bossAILevel に応じて強さが変わる
+    // 0=最弱: 記憶しない、完全ランダム
+    // 1=普通: 記憶あり(最大8枚)、ペア発見率40%
+    // 2=最強: 記憶あり(全部)、ペア発見率80%、プレイヤーがめくったカードも覚える
+    const AI_PARAMS = [
+      { memoryChance: 0,    maxMemory: 0,  spyPlayer: false },
+      { memoryChance: 0.3,  maxMemory: 8,  spyPlayer: false },
+      { memoryChance: 0.5,  maxMemory: 99, spyPlayer: true  },
+    ];
+    const ai = AI_PARAMS[this.bossAILevel];
 
     let pick1, pick2;
 
-    if (Math.random() < memoryChance && this._bossMemory && this._bossMemory.length >= 2) {
+    if (!this._bossMemory) this._bossMemory = [];
+
+    if (Math.random() < ai.memoryChance && this._bossMemory.length >= 2) {
       // 記憶からペアを探す
-      const mem = this._bossMemory;
+      const mem = this._bossMemory.filter(c => !c.isMatched);
       let foundPair = false;
       for (let i = 0; i < mem.length && !foundPair; i++) {
         for (let j = i + 1; j < mem.length && !foundPair; j++) {
-          if (mem[i].data.pairKey === mem[j].data.pairKey
-              && !mem[i].isMatched && !mem[j].isMatched) {
+          if (mem[i].data.pairKey === mem[j].data.pairKey) {
             pick1 = mem[i];
             pick2 = mem[j];
             foundPair = true;
@@ -298,10 +314,14 @@ export default class MemoryBossScene extends Phaser.Scene {
       pick2 = available[1];
     }
 
-    // ボスの記憶に追加
-    if (!this._bossMemory) this._bossMemory = [];
-    if (!this._bossMemory.includes(pick1)) this._bossMemory.push(pick1);
-    if (!this._bossMemory.includes(pick2)) this._bossMemory.push(pick2);
+    // ボスの記憶に追加 (上限あり)
+    const addMemory = (card) => {
+      if (!this._bossMemory.includes(card) && this._bossMemory.length < ai.maxMemory) {
+        this._bossMemory.push(card);
+      }
+    };
+    addMemory(pick1);
+    addMemory(pick2);
 
     // 1枚目をめくる
     this._flipCard(pick1, true);

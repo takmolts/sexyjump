@@ -683,7 +683,7 @@ export default class GameScene extends Phaser.Scene {
     this.scrollSpeed = Phaser.Math.Linear(this.scrollSpeed, targetSpeed, 0.02);
 
     // ---- ゲームオーバー判定: プレイヤーが画面外 (下) に落ちた ----
-    if (this.player.y > this.cameras.main.scrollY + H + 80) {
+    if (this.player.y > this.cameras.main.scrollY + H + CONFIG.PLAYER_RADIUS) {
       if (this.wingCount > 0) {
         this._useWing();
       } else {

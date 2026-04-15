@@ -7,9 +7,9 @@ export const CONFIG = {
   HEIGHT: 844,
 
   // --- スクロール速度 ---
-  SCROLL_SPEED_BASE: 38,       // 初期スクロール速度 (px/秒)
-  SCROLL_SPEED_MAX: 140,       // 最大スクロール速度
-  SCROLL_SPEED_PER_50: 4,      // 50段ごとに加速する量
+  SCROLL_SPEED_BASE: 60,       // 初期スクロール速度 (px/秒)
+  SCROLL_SPEED_MAX: 180,       // 最大スクロール速度
+  SCROLL_SPEED_PER_50: 6,      // 50段ごとに加速する量
 
   // --- 物理パラメーター ---
   GRAVITY: 1050,
