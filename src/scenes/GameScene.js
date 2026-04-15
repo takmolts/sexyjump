@@ -824,16 +824,34 @@ export default class GameScene extends Phaser.Scene {
       ease: 'Sine.easeInOut',
       onComplete: () => {
         if (!enemy.active) return;
-        // フェーズ2: プレイヤーの「今の位置」に向かってホーミング
+        // フェーズ2: プレイヤーの「今の位置」に向かってホーミング(1回目)
         this.tweens.add({
           targets: enemy,
           x: this.player.x,
           y: this.player.y,
-          duration: Phaser.Math.Between(600, 1000),
+          duration: Phaser.Math.Between(500, 800),
           ease: 'Sine.easeIn',
           onComplete: () => {
             if (!enemy.active) return;
-            // フェーズ3: ランダムに飛び去る
+            // フェーズ3: 少しずれてから再度ホーミング(2回目)
+            this.tweens.add({
+              targets: enemy,
+              x: this.player.x + Phaser.Math.Between(-60, 60),
+              y: this.player.y + Phaser.Math.Between(-40, -80),
+              duration: Phaser.Math.Between(300, 500),
+              ease: 'Sine.easeOut',
+              onComplete: () => {
+                if (!enemy.active) return;
+                // フェーズ4: プレイヤーに再突進
+                this.tweens.add({
+                  targets: enemy,
+                  x: this.player.x,
+                  y: this.player.y,
+                  duration: Phaser.Math.Between(400, 700),
+                  ease: 'Sine.easeIn',
+                  onComplete: () => {
+                    if (!enemy.active) return;
+                    // フェーズ5: ランダムに飛び去る
             const exitPoints = [];
             const num = Phaser.Math.Between(2, 3);
             for (let i = 0; i < num; i++) {
@@ -851,6 +869,10 @@ export default class GameScene extends Phaser.Scene {
               })),
               onComplete: () => {
                 this.enemies.remove(enemy, true, true);
+              }
+            });
+                  }
+                });
               }
             });
           }
