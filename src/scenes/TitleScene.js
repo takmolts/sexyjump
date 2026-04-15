@@ -24,31 +24,13 @@ export default class TitleScene extends Phaser.Scene {
       cl.fillEllipse(cx, cy, Phaser.Math.Between(60, 160), Phaser.Math.Between(30, 70));
     }
 
-    // --- タイトルロゴ ---
-    const titleBg = this.add.graphics();
-    titleBg.fillStyle(0x000000, 0.45);
-    titleBg.fillRoundedRect(20, 80, W - 40, 150, 20);
-
-    this.add.text(W / 2, 130, 'SexyJump', {
-      fontFamily: '"M PLUS Rounded 1c", Arial Black, sans-serif',
-      fontSize: '60px',
-      fontStyle: 'bold',
-      color: '#FFD700',
-      stroke: '#8B4513',
-      strokeThickness: 6,
-      shadow: { offsetX: 3, offsetY: 3, color: '#000', blur: 6, fill: true }
-    }).setOrigin(0.5);
-
-    this.add.text(W / 2, 200, '登れ！頂上を目指せ！', {
-      fontFamily: '"M PLUS Rounded 1c", Arial, sans-serif',
-      fontSize: '18px',
-      color: '#ffffff',
-      stroke: '#000000',
-      strokeThickness: 3
-    }).setOrigin(0.5);
+    // --- タイトルバナー ---
+    this.add.image(W / 2, 140, 'banner')
+      .setDisplaySize(W - 30, (W - 30) * 0.4)
+      .setOrigin(0.5);
 
     // --- プレイヤーキャラ装飾 ---
-    const playerImg = this.add.sprite(W / 2, 290, 'player').setDisplaySize(80, 80);
+    const playerImg = this.add.sprite(W / 2, 280, 'player').setDisplaySize(140, 140);
     playerImg.play('player_run');
     this.tweens.add({
       targets: playerImg,

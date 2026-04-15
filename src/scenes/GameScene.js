@@ -480,7 +480,7 @@ export default class GameScene extends Phaser.Scene {
     }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
 
     // 一時停止ボタン
-    const pauseBtn = this.add.image(W - 22, 56, 'stop')
+    const pauseBtn = this.add.image(W - 22, 66, 'stop')
       .setDisplaySize(36, 36)
       .setScrollFactor(0).setDepth(52).setInteractive();
     pauseBtn.on('pointerdown', (pointer) => {

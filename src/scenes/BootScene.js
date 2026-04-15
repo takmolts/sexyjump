@@ -54,6 +54,7 @@ export default class BootScene extends Phaser.Scene {
     this.load.image('friend_02', 'assets/images/friend_02.png');
     this.load.image('wing', 'assets/images/wing.png');
     this.load.image('stop', 'assets/images/stop.png');
+    this.load.image('banner', 'assets/images/banner.png');
 
     // --- 音声 ---
     this.load.audio('bgm_game', 'assets/audio/bgm.mp3');
@@ -97,6 +98,7 @@ export default class BootScene extends Phaser.Scene {
       this.chromaKey('enemy_01');
       this.chromaKey('friend_01');
       this.chromaKey('friend_02');
+    this.chromaKey('banner');
 
       // バナナテクスチャを分割生成
       this.createBananaTextures();
