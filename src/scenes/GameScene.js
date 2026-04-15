@@ -683,7 +683,7 @@ export default class GameScene extends Phaser.Scene {
     this.scrollSpeed = Phaser.Math.Linear(this.scrollSpeed, targetSpeed, 0.02);
 
     // ---- ゲームオーバー判定: プレイヤーが画面外 (下) に落ちた ----
-    if (this.player.y > this.cameras.main.scrollY + H) {
+    if (!this._recovering && this.player.y > this.cameras.main.scrollY + H) {
       if (this.wingCount > 0) {
         this._useWing();
       } else {
@@ -1039,9 +1039,9 @@ export default class GameScene extends Phaser.Scene {
       targetY = camY + H * 0.5;
     }
 
-    // プレイヤーを画面下から飛び上がらせる
-    this.player.setPosition(targetX, camY + H + 40);
-    this.player.setVelocity(0, CONFIG.JUMP_VY * 1.2);
+    // プレイヤーを画面下部に配置して飛び上がらせる
+    this.player.setPosition(targetX, camY + H - 20);
+    this.player.setVelocity(0, CONFIG.JUMP_VY * 1.5);
 
     // 羽エフェクトテキスト
     const ft = this.add.text(CONFIG.WIDTH / 2, H / 2, '🪶 復活！', {
