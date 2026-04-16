@@ -390,7 +390,8 @@ export default class MemoryBossScene extends Phaser.Scene {
             });
           } else if (playerWins && this.bossRush) {
             // ボスラッシュ: 次のボス戦へ
-            const nextScene = Math.random() < 0.5 ? 'BossScene' : 'MemoryBossScene';
+            const bossScenes = ['BossScene', 'MemoryBossScene', 'JankenBossScene'];
+            const nextScene = bossScenes[Math.floor(Math.random() * bossScenes.length)];
             this.scene.start(nextScene, {
               stageCount: this.stageCount,
               bananaScore: this.bananaScore,

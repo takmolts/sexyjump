@@ -581,7 +581,8 @@ export default class GameScene extends Phaser.Scene {
         this.cameras.main.fade(500, 0, 0, 0, false, (_cam, progress) => {
           if (progress === 1) {
             if (this.bgm) this.bgm.stop();
-            const bossScene = Math.random() < 0.5 ? 'BossScene' : 'MemoryBossScene';
+            const bossScenes = ['BossScene', 'MemoryBossScene', 'JankenBossScene'];
+            const bossScene = bossScenes[Math.floor(Math.random() * bossScenes.length)];
             this.scene.start(bossScene, {
               stageCount: this.stageCount,
               bananaScore: this.bananaScore,

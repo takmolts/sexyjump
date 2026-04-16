@@ -5,6 +5,7 @@ import TitleScene    from './scenes/TitleScene.js';
 import GameScene     from './scenes/GameScene.js';
 import BossScene       from './scenes/BossScene.js';
 import MemoryBossScene from './scenes/MemoryBossScene.js';
+import JankenBossScene from './scenes/JankenBossScene.js';
 import GameOverScene   from './scenes/GameOverScene.js';
 
 const game = new Phaser.Game({
@@ -35,6 +36,7 @@ const game = new Phaser.Game({
     GameScene,
     BossScene,
     MemoryBossScene,
+    JankenBossScene,
     GameOverScene
   ]
 });
