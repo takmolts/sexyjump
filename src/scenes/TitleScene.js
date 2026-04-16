@@ -106,6 +106,20 @@ export default class TitleScene extends Phaser.Scene {
     }).setOrigin(1, 0).setInteractive();
     helpBtn.on('pointerdown', () => this._showHelp());
 
+    // --- ボスラッシュモードボタン ---
+    this.createButton(W / 2, H - 110, '  ⚔️ ボスラッシュ  ', '#4A148C', '#CE93D8', () => {
+      this.cameras.main.fade(300, 0, 0, 0, false, (_cam, progress) => {
+        if (progress === 1) {
+          const scene = Math.random() < 0.5 ? 'BossScene' : 'MemoryBossScene';
+          this.scene.start(scene, {
+            stageCount: 0, bananaScore: 0, wingCount: 0,
+            scrollSpeed: CONFIG.SCROLL_SPEED_BASE, bossLevel: 1,
+            bossRush: true
+          });
+        }
+      });
+    });
+
     // --- ゲームスタートボタン (一番下) ---
     const startBtn = this.createButton(W / 2, H - 55, '  ゲームスタート  ', '#1B5E20', '#C8E6C9', () => {
       this.startGame();

@@ -71,6 +71,7 @@ export default class BossScene extends Phaser.Scene {
     this.scrollSpeed = data.scrollSpeed || CONFIG.SCROLL_SPEED_BASE;
     this.wingCount   = data.wingCount   || 0;
     this.bossLevel   = data.bossLevel   || 1;
+    this.bossRush    = data.bossRush   || false;
     this.isDebug     = data.debug || false;
 
     // ボスごとのパラメーター
@@ -573,17 +574,30 @@ export default class BossScene extends Phaser.Scene {
         this._showBonusAnimation(overlay, bonus, () => {
           this.cameras.main.fade(500, 0, 0, 0, false, (_cam, progress) => {
             if (progress === 1) {
-              this.scene.start('GameScene', {
-                stageCount: this.stageCount,
-                bananaScore: this.bananaScore,
-                wingCount: this.wingCount,
-                scrollSpeed: Math.max(CONFIG.SCROLL_SPEED_BASE, this.scrollSpeed - 8)
-              });
+              if (this.bossRush) {
+                // ボスラッシュ: 次のボス戦へ
+                const nextScene = Math.random() < 0.5 ? 'BossScene' : 'MemoryBossScene';
+                this.scene.start(nextScene, {
+                  stageCount: this.stageCount,
+                  bananaScore: this.bananaScore,
+                  wingCount: this.wingCount,
+                  scrollSpeed: this.scrollSpeed,
+                  bossLevel: this.bossLevel + 1,
+                  bossRush: true
+                });
+              } else {
+                this.scene.start('GameScene', {
+                  stageCount: this.stageCount,
+                  bananaScore: this.bananaScore,
+                  wingCount: this.wingCount,
+                  scrollSpeed: Math.max(CONFIG.SCROLL_SPEED_BASE, this.scrollSpeed - 8)
+                });
+              }
             }
           });
         });
       });
-    } else if (this.stageCount >= 1000) {
+    } else if (this.bossRush || this.stageCount >= 1000) {
       // 1000段以降は即ゲームオーバー
       this.time.delayedCall(2800, () => {
         this.cameras.main.fade(500, 0, 0, 0, false, (_cam, progress) => {

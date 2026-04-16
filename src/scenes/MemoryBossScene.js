@@ -24,6 +24,7 @@ export default class MemoryBossScene extends Phaser.Scene {
     this.scrollSpeed = data.scrollSpeed || CONFIG.SCROLL_SPEED_BASE;
     this.wingCount   = data.wingCount   || 0;
     this.bossLevel   = data.bossLevel   || 1;
+    this.bossRush    = data.bossRush   || false;
 
     this.playerPairs = 0;
     this.bossPairs   = 0;
@@ -357,7 +358,7 @@ export default class MemoryBossScene extends Phaser.Scene {
       const bonus = this.playerPairs * 3;
       this.bananaScore += bonus;
       subText = `${this.playerPairs} vs ${this.bossPairs}\nバナナ +${bonus}本！`;
-    } else if (this.stageCount >= 1000) {
+    } else if (this.bossRush || this.stageCount >= 1000) {
       subText = `${this.playerPairs} vs ${this.bossPairs}\nGAME OVER`;
     } else {
       const lost = this.bananaScore - Math.floor(this.bananaScore / 3);
@@ -381,11 +382,22 @@ export default class MemoryBossScene extends Phaser.Scene {
     this.time.delayedCall(3000, () => {
       this.cameras.main.fade(500, 0, 0, 0, false, (_cam, progress) => {
         if (progress === 1) {
-          if (!playerWins && this.stageCount >= 1000) {
+          if (!playerWins && (this.bossRush || this.stageCount >= 1000)) {
             this.scene.start('GameOverScene', {
               stageCount: this.stageCount,
               bananaScore: this.bananaScore,
               totalScore: this.stageCount + this.bananaScore * 2
+            });
+          } else if (playerWins && this.bossRush) {
+            // ボスラッシュ: 次のボス戦へ
+            const nextScene = Math.random() < 0.5 ? 'BossScene' : 'MemoryBossScene';
+            this.scene.start(nextScene, {
+              stageCount: this.stageCount,
+              bananaScore: this.bananaScore,
+              wingCount: this.wingCount,
+              scrollSpeed: this.scrollSpeed,
+              bossLevel: this.bossLevel + 1,
+              bossRush: true
             });
           } else {
             this.scene.start('GameScene', {
