@@ -221,7 +221,7 @@ export default class GameScene extends Phaser.Scene {
 
       // 単独足場が2個以上続く場合、2個目以降は左右に揺れる
       if (this.soloStreak >= 2) {
-        const swingRange = 40;
+        const swingRange = 70;
         const origX = x;
         p._swingTween = this.tweens.add({
           targets: p,
