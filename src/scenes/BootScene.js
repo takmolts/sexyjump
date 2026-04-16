@@ -229,9 +229,24 @@ export default class BootScene extends Phaser.Scene {
   /** パネルテクスチャを画像ベースで生成 */
   createPanelTextures(panelsData) {
     panelsData.forEach((panel) => {
-      // ロード済みの画像をそのままパネルテクスチャとして登録
       const imgKey = `panel_img_${panel.id}`;
-      const source = this.textures.get(imgKey).getSourceImage();
+      const tex = this.textures.get(imgKey);
+      // 画像ロード失敗時はフォールバック (空のcanvas)
+      if (!tex || tex.key === '__MISSING') {
+        console.warn(`Panel image missing: ${imgKey}`);
+        const fallback = document.createElement('canvas');
+        fallback.width = 96; fallback.height = 96;
+        const fctx = fallback.getContext('2d');
+        fctx.fillStyle = '#333';
+        fctx.fillRect(0, 0, 96, 96);
+        fctx.fillStyle = '#fff';
+        fctx.font = '12px Arial';
+        fctx.textAlign = 'center';
+        fctx.fillText(panel.label, 48, 54);
+        this.textures.addCanvas(`panel_${panel.id}`, fallback);
+        return;
+      }
+      const source = tex.getSourceImage();
       const canvas = document.createElement('canvas');
       canvas.width = source.width;
       canvas.height = source.height;
