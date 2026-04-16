@@ -394,7 +394,7 @@ export default class JankenBossScene extends Phaser.Scene {
             const scenes = ['BossScene', 'MemoryBossScene', 'JankenBossScene'];
             const nextScene = scenes[Math.floor(Math.random() * scenes.length)];
             this.scene.start(nextScene, {
-              stageCount: this.stageCount,
+              stageCount: this.stageCount + 50,
               bananaScore: this.bananaScore,
               wingCount: this.wingCount,
               scrollSpeed: this.scrollSpeed,
