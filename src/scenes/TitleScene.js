@@ -67,7 +67,12 @@ export default class TitleScene extends Phaser.Scene {
       color: '#ff9800', stroke: '#000', strokeThickness: 2
     }).setOrigin(0.5);
 
-    this.add.text(instX, panelY + 106, '得点 = 段数 + バナナ✕2', {
+    this.add.text(instX, panelY + 106, '🪶 羽があれば空中で二段ジャンプ！', {
+      fontFamily: 'Arial', fontSize: '12px', color: '#00E5FF',
+      stroke: '#000', strokeThickness: 2
+    }).setOrigin(0.5);
+
+    this.add.text(instX, panelY + 132, '得点 = 段数 + バナナ✕2', {
       fontFamily: 'Arial', fontSize: '11px', color: '#aaaaaa',
       stroke: '#000', strokeThickness: 1
     }).setOrigin(0.5);
@@ -136,7 +141,7 @@ export default class TitleScene extends Phaser.Scene {
     });
 
     // バージョン
-    this.add.text(W / 2, H - 16, 'V01.00.02', {
+    this.add.text(W / 2, H - 16, 'V01.00.03', {
       fontSize: '15px', color: '#aaaaaa', fontFamily: 'Arial',
       stroke: '#000', strokeThickness: 1
     }).setOrigin(0.5);
@@ -275,6 +280,7 @@ export default class TitleScene extends Phaser.Scene {
           '  触れると羽を獲得（最大2つ）',
           '  羽があると落下時に復活できる',
           '  敵の攻撃もガードできる',
+          '  空中タップで二段ジャンプも可能！',
           '',
           '👿 エネミー',
           '  画面を飛び回りプレイヤーを狙う',
