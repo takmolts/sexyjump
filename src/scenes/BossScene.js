@@ -110,7 +110,19 @@ export default class BossScene extends Phaser.Scene {
         }
       }
     }
-    const chosenWord = candidates[Math.floor(Math.random() * candidates.length)];
+    let chosenWord;
+    if (candidates.length > 0) {
+      chosenWord = candidates[Math.floor(Math.random() * candidates.length)];
+    } else {
+      // フォールバック: 場のパネルの読みから直接選ぶ
+      const fallback = [];
+      for (const panel of this.displayPanels) {
+        for (const reading of panel.readings) {
+          if (getLastUnit(reading) !== 'ん') fallback.push(reading);
+        }
+      }
+      chosenWord = fallback.length > 0 ? fallback[Math.floor(Math.random() * fallback.length)] : 'しりとり';
+    }
     this.currentWord   = chosenWord;
     this.requiredStart = getLastUnit(chosenWord);
 
