@@ -303,6 +303,7 @@ export default class GameScene extends Phaser.Scene {
   _onLand(player, platform) {
     this.coyoteFrames = CONFIG.COYOTE_FRAMES;
     this.currentPlatform = platform;
+    this._usedDoubleJump = false;
 
     // 段数カウント: 初めて踏む高さより高い (Y が小さい) 足場に乗ったとき加算
     if (platform.y < this.highestStepY - 4) {
@@ -387,6 +388,8 @@ export default class GameScene extends Phaser.Scene {
     const canJump = this.player.body.blocked.down || this.coyoteFrames > 0;
     if (canJump) {
       this._doJump();
+    } else if (this.wingCount > 0 && !this._usedDoubleJump) {
+      this._doDoubleJump();
     }
   }
 
@@ -425,6 +428,43 @@ export default class GameScene extends Phaser.Scene {
       scaleY: 0.3,
       duration: 250,
       onComplete: () => fx.destroy()
+    });
+  }
+
+  _doDoubleJump() {
+    this._usedDoubleJump = true;
+
+    // 方向反転して半分の力でジャンプ
+    this.playerDir *= -1;
+    const vx = CONFIG.PLAYER_SPEED * this.playerDir;
+    this.player.setVelocity(vx, CONFIG.JUMP_VY * 0.5);
+
+    // スプライトの向き更新
+    this.player.setFlipX(this.playerDir < 0);
+
+    // 羽エフェクト
+    const screenX = this.player.x - this.cameras.main.scrollX;
+    const screenY = this.player.y - this.cameras.main.scrollY;
+    const ft = this.add.text(screenX, screenY, '🪶', {
+      fontSize: '24px'
+    }).setScrollFactor(0).setDepth(100).setOrigin(0.5);
+
+    this.tweens.add({
+      targets: ft,
+      y: screenY + 40,
+      alpha: 0,
+      duration: 500,
+      onComplete: () => ft.destroy()
+    });
+
+    // スクイッシュアニメ
+    this.tweens.add({
+      targets: this.player,
+      scaleY: 0.7,
+      scaleX: 1.3,
+      duration: 80,
+      yoyo: true,
+      ease: 'Quad.easeOut'
     });
   }
 
@@ -627,6 +667,15 @@ export default class GameScene extends Phaser.Scene {
         this.playerDir = -1;
       }
       this.player.setVelocityX(CONFIG.PLAYER_SPEED * this.playerDir);
+    }
+
+    // 画面上端: はみ出したら止めて落下させる
+    const camTop = this.cameras.main.scrollY;
+    if (this.player.y < camTop) {
+      this.player.y = camTop;
+      if (this.player.body.velocity.y < 0) {
+        this.player.setVelocityY(0);
+      }
     }
 
     // 画面端ループ: 左右がつながる
