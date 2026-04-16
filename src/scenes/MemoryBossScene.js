@@ -104,7 +104,7 @@ export default class MemoryBossScene extends Phaser.Scene {
   _createCardGrid() {
     const W = CONFIG.WIDTH;
     const cols = 4, rows = 6;
-    const cardW = 78, cardH = 90;
+    const cardW = 120, cardH = 100;
     const marginX = (W - cols * cardW) / (cols + 1);
     const startY = 120;
     const gapY = 6;
@@ -219,7 +219,7 @@ export default class MemoryBossScene extends Phaser.Scene {
         c.face.setAlpha(0.5);
         const glow = this.add.graphics().setDepth(10);
         glow.lineStyle(3, color, 1);
-        glow.strokeRoundedRect(c.cx - 39, c.cy - 45, 78, 90, 8);
+        glow.strokeRoundedRect(c.cx - 60, c.cy - 50, 120, 100, 8);
         this.tweens.add({ targets: glow, alpha: 0.3, duration: 500 });
       });
 

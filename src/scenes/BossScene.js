@@ -242,7 +242,7 @@ export default class BossScene extends Phaser.Scene {
     const W = CONFIG.WIDTH;
     const cols = 4;
     const rows = Math.ceil(CONFIG.BOSS_PANEL_COUNT / cols);
-    const panelW = 82, panelH = 56;
+    const panelW = 120, panelH = 72;
     const marginX = (W - cols * panelW) / (cols + 1);
     const startY = 260;
     const gapY   = 2;
@@ -314,7 +314,7 @@ export default class BossScene extends Phaser.Scene {
     const color = isPlayer ? CONFIG.COLOR.PANEL_CORRECT : 0xe91e63;
     const fe = this.add.graphics().setDepth(20);
     fe.fillStyle(color, 0.6);
-    fe.fillRoundedRect(img.x - 41, img.y - 43, 82, 86, 12);
+    fe.fillRoundedRect(img.x - 60, img.y - 36, 120, 72, 12);
     this.tweens.add({ targets: fe, alpha: 0, duration: 500, onComplete: () => fe.destroy() });
 
     const lastUnit = getLastUnit(reading);
@@ -366,7 +366,7 @@ export default class BossScene extends Phaser.Scene {
     // 赤フラッシュ
     const fe = this.add.graphics().setDepth(20);
     fe.fillStyle(CONFIG.COLOR.PANEL_WRONG, 0.7);
-    fe.fillRoundedRect(img.x - 41, img.y - 43, 82, 86, 12);
+    fe.fillRoundedRect(img.x - 60, img.y - 36, 120, 72, 12);
     this.tweens.add({ targets: fe, alpha: 0, duration: 400, onComplete: () => fe.destroy() });
 
     this.cameras.main.shake(200, 0.015);
@@ -412,7 +412,7 @@ export default class BossScene extends Phaser.Scene {
     if (panelObj) {
       const hl = this.add.graphics().setDepth(20);
       hl.lineStyle(4, 0xe91e63, 1);
-      hl.strokeRoundedRect(panelObj.img.x - 41, panelObj.img.y - 43, 82, 86, 12);
+      hl.strokeRoundedRect(panelObj.img.x - 60, panelObj.img.y - 36, 120, 72, 12);
       this.time.delayedCall(600, () => hl.destroy());
     }
 
@@ -464,7 +464,7 @@ export default class BossScene extends Phaser.Scene {
           if (panelObj) {
             const hl = this.add.graphics().setDepth(20);
             hl.lineStyle(4, 0xff0000, 1);
-            hl.strokeRoundedRect(panelObj.img.x - 43, panelObj.img.y - 30, 86, 60, 8);
+            hl.strokeRoundedRect(panelObj.img.x - 60, panelObj.img.y - 36, 120, 72, 8);
             this.tweens.add({
               targets: hl, alpha: 0.3, duration: 300,
               yoyo: true, repeat: 3
@@ -643,18 +643,25 @@ export default class BossScene extends Phaser.Scene {
       color: '#FFD700', stroke: '#000', strokeThickness: 5
     }).setOrigin(0.5).setDepth(110);
 
+    // ボーナスが0なら即遷移
+    if (bonus <= 0) {
+      this.bananaScore += 0;
+      this.time.delayedCall(600, onComplete);
+      return;
+    }
+
     // カウントアップアニメーション
     let current = 0;
-    const step = Math.max(1, Math.floor(bonus / 20)); // 20段階程度で刻む
-    const interval = Math.max(30, Math.floor(800 / Math.max(1, bonus))); // 全体で約800ms
+    const step = Math.max(1, Math.floor(bonus / 20));
+    const interval = Math.max(30, Math.floor(800 / bonus));
+    const repeatCount = Math.ceil(bonus / step) - 1;
 
-    const counter = this.time.addEvent({
+    this.time.addEvent({
       delay: interval,
-      repeat: bonus > 0 ? Math.ceil(bonus / step) - 1 : 0,
+      repeat: Math.max(0, repeatCount),
       callback: () => {
         current = Math.min(current + step, bonus);
         bonusText.setText(`🍌 +${current}`);
-        // 数字が増えるたびに軽くスケール演出
         this.tweens.add({
           targets: bonusText,
           scaleX: 1.15, scaleY: 1.15,
@@ -665,7 +672,7 @@ export default class BossScene extends Phaser.Scene {
     });
 
     // カウントアップ完了後にバナナスコアに加算して遷移
-    const totalTime = interval * Math.ceil(bonus / step) + 400;
+    const totalTime = interval * (repeatCount + 1) + 400;
     this.time.delayedCall(totalTime, () => {
       // 最終値を確定表示
       bonusText.setText(`🍌 +${bonus}`);

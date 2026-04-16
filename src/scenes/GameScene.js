@@ -178,7 +178,7 @@ export default class GameScene extends Phaser.Scene {
       // --- 複数足場 (2〜3本) ---
       this.soloStreak = 0;
       const count = Math.random() < 0.5 ? 2 : 3;
-      const pw = count === 2 ? 120 : CONFIG.PLATFORM_MULTI_W;
+      const pw = count === 2 ? 180 : CONFIG.PLATFORM_MULTI_W;
       const margin = 20;
       const slotW = (W - margin * 2) / count;
 
@@ -221,7 +221,7 @@ export default class GameScene extends Phaser.Scene {
 
       // 単独足場が2個以上続く場合、2個目以降は左右に揺れる
       if (this.soloStreak >= 2) {
-        const swingRange = 70;
+        const swingRange = 110;
         const origX = x;
         p._swingTween = this.tweens.add({
           targets: p,

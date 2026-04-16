@@ -3,7 +3,7 @@ export const CONFIG = {
   DEBUG: false,                  // true でデバッグUI表示
 
   // --- 画面サイズ ---
-  WIDTH: 390,
+  WIDTH: 600,
   HEIGHT: 844,
 
   // --- スクロール速度 ---
@@ -28,12 +28,12 @@ export const CONFIG = {
   PLATFORM_MIN_GAP: 95,        // 最小Y間隔
   PLATFORM_MAX_GAP: 170,       // 最大Y間隔
   PLATFORM_AVG_GAP: 132,       // 平均Y間隔 (段数計算用)
-  PLATFORM_MIN_W: 100,         // 最小幅 (単独時)
-  PLATFORM_MAX_W: 140,         // 最大幅 (単独時)
-  PLATFORM_MULTI_W: 70,        // 複数足場時の幅
+  PLATFORM_MIN_W: 180,         // 最小幅 (単独時)
+  PLATFORM_MAX_W: 240,         // 最大幅 (単独時)
+  PLATFORM_MULTI_W: 110,       // 複数足場時の幅
   PLATFORM_MULTI_CHANCE: 0.4,  // 複数足場になる確率
-  PLATFORM_MIN_X: 55,          // 最小X
-  PLATFORM_MAX_X: 335,         // 最大X
+  PLATFORM_MIN_X: 70,          // 最小X
+  PLATFORM_MAX_X: 530,         // 最大X
   PLATFORM_BUFFER: 600,        // カメラ上部からの先行生成バッファ
   PLATFORM_CLEANUP: 300,       // カメラ下部からのクリーンアップ閾値
 

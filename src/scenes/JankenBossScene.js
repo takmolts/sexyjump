@@ -93,20 +93,20 @@ export default class JankenBossScene extends Phaser.Scene {
     this.battleArea = this.add.container(0, 0);
 
     // プレイヤー側の出したカード
-    this.playerPlayedImg = this.add.image(W * 0.3, 220, 'jan_gu')
-      .setDisplaySize(100, 100).setAlpha(0);
-    this.bossPlayedImg = this.add.image(W * 0.7, 220, 'jan_gu')
-      .setDisplaySize(100, 100).setAlpha(0);
+    this.playerPlayedImg = this.add.image(W * 0.28, 230, 'jan_gu')
+      .setDisplaySize(140, 140).setAlpha(0);
+    this.bossPlayedImg = this.add.image(W * 0.72, 230, 'jan_gu')
+      .setDisplaySize(140, 140).setAlpha(0);
 
     // VS テキスト
-    this.add.text(W / 2, 220, 'VS', {
-      fontFamily: 'Arial Black', fontSize: '28px',
-      color: '#ffffff', stroke: '#000', strokeThickness: 4
+    this.add.text(W / 2, 230, 'VS', {
+      fontFamily: 'Arial Black', fontSize: '36px',
+      color: '#ffffff', stroke: '#000', strokeThickness: 5
     }).setOrigin(0.5);
 
     // 結果テキスト
-    this.resultText = this.add.text(W / 2, 290, '', {
-      fontFamily: '"M PLUS Rounded 1c", Arial Black', fontSize: '28px',
+    this.resultText = this.add.text(W / 2, 320, '', {
+      fontFamily: '"M PLUS Rounded 1c", Arial Black', fontSize: '32px',
       color: '#FFD700', stroke: '#000', strokeThickness: 4
     }).setOrigin(0.5);
 
@@ -131,17 +131,17 @@ export default class JankenBossScene extends Phaser.Scene {
 
   _createBossHandDisplay(W) {
     this.bossCardBacks = [];
-    const startX = 45;
-    const gap = 35;
-    const y = 140;
+    const gap = (W - 80) / 9;
+    const startX = 40 + gap / 2;
+    const y = 145;
     for (let i = 0; i < 9; i++) {
       const back = this.add.graphics();
       back.fillStyle(0x880000, 1);
-      back.fillRoundedRect(-14, -18, 28, 36, 5);
+      back.fillRoundedRect(-18, -22, 36, 44, 6);
       back.lineStyle(1, 0xff4444, 0.6);
-      back.strokeRoundedRect(-14, -18, 28, 36, 5);
+      back.strokeRoundedRect(-18, -22, 36, 44, 6);
       const q = this.add.text(0, 0, '?', {
-        fontSize: '16px', fontFamily: 'Arial Black', color: '#ff6666'
+        fontSize: '20px', fontFamily: 'Arial Black', color: '#ff6666'
       }).setOrigin(0.5);
       const container = this.add.container(startX + i * gap, y, [back, q]);
       this.bossCardBacks.push(container);
@@ -155,9 +155,9 @@ export default class JankenBossScene extends Phaser.Scene {
 
     // 3行に配置: グー3枚、チョキ3枚、パー3枚
     const types = ['gu', 'ty', 'pa'];
-    const startY = 370;
-    const rowGap = 90;
-    const cardSize = 72;
+    const startY = 400;
+    const rowGap = 110;
+    const cardSize = 90;
 
     types.forEach((type, row) => {
       for (let col = 0; col < 3; col++) {
