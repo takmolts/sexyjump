@@ -41,36 +41,39 @@ export default class TitleScene extends Phaser.Scene {
       repeat: -1
     });
 
-    // --- 操作説明 ---
+    // --- 操作説明 (左) & ランキング (右) 横並び ---
+    const panelY = 345;
+    const panelH = 280;
+    const halfW = (W - 50) / 2;
+
+    // 左: 操作説明
     const instBg = this.add.graphics();
     instBg.fillStyle(0x000000, 0.4);
-    instBg.fillRoundedRect(20, 345, W - 40, 120, 16);
+    instBg.fillRoundedRect(15, panelY, halfW, panelH, 12);
 
-    this.add.text(W / 2, 365, '◀ タップで方向ジャンプ ▶', {
-      fontFamily: '"M PLUS Rounded 1c", Arial, sans-serif',
-      fontSize: '15px',
-      color: '#FFD700',
+    const instX = 15 + halfW / 2;
+    this.add.text(instX, panelY + 18, '◀ タップでジャンプ ▶', {
+      fontFamily: '"M PLUS Rounded 1c", Arial', fontSize: '14px',
+      color: '#FFD700', stroke: '#000', strokeThickness: 2
+    }).setOrigin(0.5);
+
+    this.add.text(instX, panelY + 48, '🍌 バナナでスコアUP', {
+      fontFamily: 'Arial', fontSize: '13px', color: '#ffffff',
       stroke: '#000', strokeThickness: 2
     }).setOrigin(0.5);
 
-    this.add.text(W / 2, 395, '🍌 バナナを集めてスコアUP', {
-      fontFamily: 'Arial, sans-serif', fontSize: '14px', color: '#ffffff',
-      stroke: '#000', strokeThickness: 2
+    this.add.text(instX, panelY + 76, '100段ごとにボス戦！', {
+      fontFamily: '"M PLUS Rounded 1c", Arial', fontSize: '13px',
+      color: '#ff9800', stroke: '#000', strokeThickness: 2
     }).setOrigin(0.5);
 
-    this.add.text(W / 2, 422, '100段ごとにボス戦！', {
-      fontFamily: '"M PLUS Rounded 1c", Arial, sans-serif',
-      fontSize: '14px', color: '#ff9800',
-      stroke: '#000', strokeThickness: 2
+    this.add.text(instX, panelY + 106, '得点 = 段数 + バナナ✕2', {
+      fontFamily: 'Arial', fontSize: '11px', color: '#aaaaaa',
+      stroke: '#000', strokeThickness: 1
     }).setOrigin(0.5);
 
-    this.add.text(W / 2, 450, '得点 = 登った段数 + バナナの本数✕2', {
-      fontFamily: 'Arial, sans-serif', fontSize: '12px', color: '#aaaaaa',
-      stroke: '#000', strokeThickness: 2
-    }).setOrigin(0.5);
-
-    // --- ランキング表示 ---
-    this._loadRanking(W);
+    // 右: ランキング
+    this._loadRanking(W, panelY, panelH, halfW);
 
     // --- デバッグUI (CONFIG.DEBUG=true のときのみ) ---
     if (CONFIG.DEBUG) {
@@ -106,8 +109,12 @@ export default class TitleScene extends Phaser.Scene {
     }).setOrigin(1, 0).setInteractive();
     helpBtn.on('pointerdown', () => this._showHelp());
 
-    // --- ボスラッシュモードボタン ---
-    this.createButton(W / 2, H - 110, '  ⚔️ ボスラッシュ  ', '#4A148C', '#CE93D8', () => {
+    // --- ゲームスタート & ボスラッシュ (横並び) ---
+    const startBtn = this.createButton(W / 2 - 130, H - 55, ' ゲームスタート ', '#1B5E20', '#C8E6C9', () => {
+      this.startGame();
+    });
+
+    this.createButton(W / 2 + 130, H - 55, ' ⚔️ ボスラッシュ ', '#4A148C', '#CE93D8', () => {
       this.cameras.main.fade(300, 0, 0, 0, false, (_cam, progress) => {
         if (progress === 1) {
           const scenes = ['BossScene', 'MemoryBossScene', 'JankenBossScene'];
@@ -119,11 +126,6 @@ export default class TitleScene extends Phaser.Scene {
           });
         }
       });
-    });
-
-    // --- ゲームスタートボタン (一番下) ---
-    const startBtn = this.createButton(W / 2, H - 55, '  ゲームスタート  ', '#1B5E20', '#C8E6C9', () => {
-      this.startGame();
     });
 
     this.tweens.add({
@@ -140,32 +142,40 @@ export default class TitleScene extends Phaser.Scene {
     }).setOrigin(0.5);
   }
 
-  async _loadRanking(W) {
-    const loadingText = this.add.text(W / 2, 480, 'ランキング読み込み中...', {
+  async _loadRanking(W, panelY, panelH, halfW) {
+    const rightX = W - 15 - halfW;
+    const centerX = rightX + halfW / 2;
+
+    const loadingText = this.add.text(centerX, panelY + panelH / 2, '読み込み中...', {
       fontFamily: 'Arial', fontSize: '12px', color: '#888888'
     }).setOrigin(0.5);
 
-    const scores = await fetchScores(5);
+    const scores = await fetchScores(10);
     loadingText.destroy();
 
-    if (scores.length === 0) return;
-
     const bg = this.add.graphics();
-    bg.fillStyle(0x000000, 0.35);
-    bg.fillRoundedRect(30, 468, W - 60, 32 + scores.length * 28, 10);
+    bg.fillStyle(0x000000, 0.4);
+    bg.fillRoundedRect(rightX, panelY, halfW, panelH, 12);
 
-    this.add.text(W / 2, 480, '🏆 ランキング', {
-      fontFamily: '"M PLUS Rounded 1c", Arial', fontSize: '16px',
+    this.add.text(centerX, panelY + 16, '🏆 ランキング', {
+      fontFamily: '"M PLUS Rounded 1c", Arial', fontSize: '14px',
       color: '#FFD700', stroke: '#000', strokeThickness: 2
     }).setOrigin(0.5);
+
+    if (scores.length === 0) {
+      this.add.text(centerX, panelY + 50, 'データなし', {
+        fontFamily: 'Arial', fontSize: '12px', color: '#888888'
+      }).setOrigin(0.5);
+      return;
+    }
 
     scores.forEach((entry, idx) => {
       const rank = idx + 1;
       const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `${rank}.`;
       const color = rank <= 3 ? '#FFD700' : '#ffffff';
-      this.add.text(W / 2, 504 + idx * 28, `${medal} ${entry.name}  ${entry.score}pt`, {
-        fontFamily: '"M PLUS Rounded 1c", Arial', fontSize: '17px',
-        color, stroke: '#000', strokeThickness: 2
+      this.add.text(centerX, panelY + 38 + idx * 23, `${medal} ${entry.name}  ${entry.score}pt`, {
+        fontFamily: 'Arial', fontSize: '13px',
+        color, stroke: '#000', strokeThickness: 1
       }).setOrigin(0.5);
     });
   }
@@ -292,8 +302,29 @@ export default class TitleScene extends Phaser.Scene {
           '  ボスより多く揃えれば勝利！',
           '  勝利: 獲得枚数×3のバナナ',
           '',
+          '【じゃんけんバトル】',
+          '  グー/チョキ/パー各3枚の手札で勝負',
+          '  9回戦で勝ち越せば勝利！',
+          '  勝利: 勝ち数×5のバナナ',
+          '',
           '敗北: バナナ1/3に減少＆羽没収',
           '（1000段以降は敗北=即ゲームオーバー）',
+        ]
+      },
+      {
+        title: 'ボスラッシュ',
+        lines: [
+          'タイトル画面から挑戦できる特別モード',
+          '',
+          'しりとり・神経衰弱・じゃんけんの',
+          'ボス戦が次々と出題される！',
+          '',
+          '勝利するたびに:',
+          '  撃破ボーナス +50pt',
+          '  各ボス戦の報酬バナナも獲得',
+          '',
+          '1回でも負けたら即ゲームオーバー！',
+          'どこまで勝ち続けられるか挑戦しよう',
         ]
       }
     ];
