@@ -357,15 +357,16 @@ export default class JankenBossScene extends Phaser.Scene {
     let subText;
 
     if (playerWins) {
-      const bonus = this.playerWins * 5;
+      const bonus = 50 + this.playerWins * 10;
       this.bananaScore += bonus;
-      subText = `${this.playerWins}勝 ${this.bossWins}敗 ${this.draws}分\nバナナ +${bonus}本！`;
-    } else if (this.bossRush || this.stageCount >= 1000) {
+      subText = `${this.playerWins}勝 ${this.bossWins}敗 ${this.draws}分\n🏆 勝利ボーナス +${bonus}本！`;
+    } else if (this.bossRush) {
       subText = `${this.playerWins}勝 ${this.bossWins}敗 ${this.draws}分\nGAME OVER`;
     } else {
-      const lost = this.bananaScore - Math.floor(this.bananaScore / 3);
-      this.bananaScore = Math.floor(this.bananaScore / 3);
-      subText = `${this.playerWins}勝 ${this.bossWins}敗 ${this.draws}分\nバナナ -${lost}本、翼を奪われた…`;
+      const penalty = 50 * (Math.floor(this.stageCount / 1000) + 1);
+      const lost = Math.min(this.bananaScore, penalty);
+      this.bananaScore = Math.max(0, this.bananaScore - penalty);
+      subText = `${this.playerWins}勝 ${this.bossWins}敗 ${this.draws}分\nバナナ -${lost}本…`;
     }
 
     const rt = this.add.text(W / 2, H / 2 - 60, resultText, {
@@ -384,7 +385,7 @@ export default class JankenBossScene extends Phaser.Scene {
     this.time.delayedCall(3000, () => {
       this.cameras.main.fade(500, 0, 0, 0, false, (_cam, progress) => {
         if (progress === 1) {
-          if (!playerWins && (this.bossRush || this.stageCount >= 1000)) {
+          if (!playerWins && this.bossRush) {
             this.scene.start('GameOverScene', {
               stageCount: this.stageCount,
               bananaScore: this.bananaScore,
@@ -405,7 +406,7 @@ export default class JankenBossScene extends Phaser.Scene {
             this.scene.start('GameScene', {
               stageCount: this.stageCount,
               bananaScore: this.bananaScore,
-              wingCount: playerWins ? this.wingCount : 0,
+              wingCount: this.wingCount,
               scrollSpeed: Math.max(CONFIG.SCROLL_SPEED_BASE, this.scrollSpeed - 8)
             });
           }

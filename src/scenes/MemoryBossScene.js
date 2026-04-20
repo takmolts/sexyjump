@@ -10,8 +10,8 @@ import { CONFIG } from '../GameConfig.js';
  *  - 一致すればそのプレイヤーが獲得しもう一度手番
  *  - 不一致なら裏に戻して相手の番
  *  - 全ペア揃ったらボスより多ければ勝ち
- *  - 勝利: めくった回数×2 のバナナ獲得
- *  - 敗北: バナナ1/3、羽没収
+ *  - 勝利: 基本50 + 獲得ペア×6 のバナナ獲得
+ *  - 敗北: バナナ-50 (羽は据え置き)
  */
 export default class MemoryBossScene extends Phaser.Scene {
   constructor() {
@@ -355,15 +355,16 @@ export default class MemoryBossScene extends Phaser.Scene {
     let subText;
 
     if (playerWins) {
-      const bonus = this.playerPairs * 3;
+      const bonus = 50 + this.playerPairs * 6;
       this.bananaScore += bonus;
-      subText = `${this.playerPairs} vs ${this.bossPairs}\nバナナ +${bonus}本！`;
-    } else if (this.bossRush || this.stageCount >= 1000) {
+      subText = `${this.playerPairs} vs ${this.bossPairs}\n🏆 勝利ボーナス +${bonus}本！`;
+    } else if (this.bossRush) {
       subText = `${this.playerPairs} vs ${this.bossPairs}\nGAME OVER`;
     } else {
-      const lost = this.bananaScore - Math.floor(this.bananaScore / 3);
-      this.bananaScore = Math.floor(this.bananaScore / 3);
-      subText = `${this.playerPairs} vs ${this.bossPairs}\nバナナ -${lost}本、翼を奪われた…`;
+      const penalty = 50 * (Math.floor(this.stageCount / 1000) + 1);
+      const lost = Math.min(this.bananaScore, penalty);
+      this.bananaScore = Math.max(0, this.bananaScore - penalty);
+      subText = `${this.playerPairs} vs ${this.bossPairs}\nバナナ -${lost}本…`;
     }
 
     const rt = this.add.text(W / 2, H / 2 - 60, resultText, {
@@ -382,7 +383,7 @@ export default class MemoryBossScene extends Phaser.Scene {
     this.time.delayedCall(3000, () => {
       this.cameras.main.fade(500, 0, 0, 0, false, (_cam, progress) => {
         if (progress === 1) {
-          if (!playerWins && (this.bossRush || this.stageCount >= 1000)) {
+          if (!playerWins && this.bossRush) {
             this.scene.start('GameOverScene', {
               stageCount: this.stageCount,
               bananaScore: this.bananaScore,
@@ -404,7 +405,7 @@ export default class MemoryBossScene extends Phaser.Scene {
             this.scene.start('GameScene', {
               stageCount: this.stageCount,
               bananaScore: this.bananaScore,
-              wingCount: playerWins ? this.wingCount : 0,
+              wingCount: this.wingCount,
               scrollSpeed: Math.max(CONFIG.SCROLL_SPEED_BASE, this.scrollSpeed - 8)
             });
           }

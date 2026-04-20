@@ -556,14 +556,12 @@ export default class BossScene extends Phaser.Scene {
     let subText;
     if (playerWins) {
       subText = 'ボスを倒した！\n引き続き登れ！';
-    } else if (this.stageCount >= 1000) {
-      // 1000段以降は即ゲームオーバー
-      subText = 'GAME OVER';
     } else {
-      // バナナ1/3に減少、羽没収
-      const lost = this.bananaScore - Math.floor(this.bananaScore / 3);
-      this.bananaScore = Math.floor(this.bananaScore / 3);
-      subText = `バナナ -${lost}本、そして翼を奪われた…\nでも諦めるな！\n引き続き登れ！`;
+      // バナナ減産 (段数1000ごとに倍率UP)、羽は据え置き
+      const penalty = 50 * (Math.floor(this.stageCount / 1000) + 1);
+      const lost = Math.min(this.bananaScore, penalty);
+      this.bananaScore = Math.max(0, this.bananaScore - penalty);
+      subText = `バナナ -${lost}本…\nでも諦めるな！\n引き続き登れ！`;
     }
 
     const rt = this.add.text(W / 2, H / 2 - 60, resultText, {
@@ -580,8 +578,8 @@ export default class BossScene extends Phaser.Scene {
     this.tweens.add({ targets: [rt, st], alpha: 1, duration: 600, delay: 200 });
 
     if (playerWins) {
-      // 残り秒数をバナナボーナスとして加算するアニメーション
-      const bonus = Math.floor(this.timeLeft);
+      // 勝利ボーナス: 基本50 + 残り秒数×2 をバナナとして加算
+      const bonus = 50 + Math.floor(this.timeLeft) * 2;
       this.time.delayedCall(1200, () => {
         this._showBonusAnimation(overlay, bonus, () => {
           this.cameras.main.fade(500, 0, 0, 0, false, (_cam, progress) => {
@@ -610,8 +608,8 @@ export default class BossScene extends Phaser.Scene {
           });
         });
       });
-    } else if (this.bossRush || this.stageCount >= 1000) {
-      // 1000段以降は即ゲームオーバー
+    } else if (this.bossRush) {
+      // ボスラッシュ敗北は即ゲームオーバー
       this.time.delayedCall(2800, () => {
         this.cameras.main.fade(500, 0, 0, 0, false, (_cam, progress) => {
           if (progress === 1) {
@@ -630,7 +628,7 @@ export default class BossScene extends Phaser.Scene {
             this.scene.start('GameScene', {
               stageCount: this.stageCount,
               bananaScore: this.bananaScore,
-              wingCount: 0,
+              wingCount: this.wingCount,
               scrollSpeed: Math.max(CONFIG.SCROLL_SPEED_BASE, this.scrollSpeed - 8)
             });
           }
@@ -645,7 +643,7 @@ export default class BossScene extends Phaser.Scene {
   _showBonusAnimation(overlay, bonus, onComplete) {
     const W = CONFIG.WIDTH, H = CONFIG.HEIGHT;
 
-    const bonusLabel = this.add.text(W / 2, H / 2 + 60, '⏱️ タイムボーナス', {
+    const bonusLabel = this.add.text(W / 2, H / 2 + 60, '🏆 勝利ボーナス', {
       fontFamily: '"M PLUS Rounded 1c", Arial', fontSize: '18px',
       color: '#00E5FF', stroke: '#000', strokeThickness: 3
     }).setOrigin(0.5).setDepth(110);
